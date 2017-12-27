@@ -24,57 +24,10 @@
 
 <body>
 
-<!--Preloader-->
-
-<div class="preloader" id="preloader">
-    <div class="item">
-      <div class="spinner">
-      </div>
-    </div>
-</div>
-
   <!--Header-->
-  <header id="fullscreen">
-    
-      <div class="logo" id="full"><a class="ajax-link" href="index.html"></a></div>
-      
-  </header>
 
-  <!--Header-->
-  <header class="boxed" id="header-white">
+  <div id="header"></div>
 
-    <div class="header-margin">
-    
-      <div class="logo"><a class="ajax-link" href="index.html">JL</a></div>
-      <ul class="header-nav">
-        <li><a class="ajax-link" href="about.html">About</a></li>
-        <li><a class="ajax-link" href="projects.html">Projects</a></li>
-        <li><a class="ajax-link" href="photography.html">Photography</a>
-          <ul>
-            <li><a class="ajax-link" href="travel.html">Travel</a></li> 
-            <li><a class="ajax-link" href="people.html">People</a></li> 
-            <li><a class="ajax-link" href="newyork.html">New York</a></li> 
-            <li><a class="ajax-link" href="collective.html">Collective</a></li>                      
-          </ul>        
-        </li>        
-        <li><a class="ajax-link" href="music.html">Music</a></li>
-      </ul>
-      
-      <ul class="social-icon">
-        <div class="social-index">
-        <li><a href="https://www.linkedin.com/in/leijason"><i class="fa fa-linkedin-square"></i></a></li>
-        <li><a href="http://jasonlei.vsco.co/grid/1"><i class="fa fa-camera-retro"></i></a></li>
-        <li><a href="https://www.soundcloud.com/jasonlei"><i class="fa fa-soundcloud"></i></a></li>
-        <li><a href="https://www.flickr.com/photos/143659296@N08/collections/72157673875107965/"><i class="fa fa-flickr"></i></a></li>
-        <li><a href="https://github.com/jason-lei"><i class="fa fa-github"></i></a></li>
-
-        </div>
-      </ul>
-      
-    </div>
-  </header>
-
-  <div class="clear"></div>
 
   <!--Content-->
 
@@ -106,7 +59,7 @@
     <img src="https://c3.staticflickr.com/9/8136/29656350866_eb50d36ae7_o.jpg">
       <a class="ajax-link" href="people.html">  
         <div class="grid-hover">
-          <h1>People</h1>
+          <h1>Portraits</h1>
         </div>
       </a>      
   </li>   
@@ -133,11 +86,19 @@
     <img src="https://c6.staticflickr.com/9/8342/29692059405_74cfa7ea42_o.jpg">
       <a class="ajax-link" href="collective.html">  
         <div class="grid-hover">
-          <h1>Collective</h1>
+          <h1>Candids</h1>
         </div>
       </a>      
   </li>  
-</ul>
+
+  <li class="grid-item" data-jkit="[show:delay=3000;speed=500;animation=fade]">
+    <img src="https://c6.staticflickr.com/9/8342/29692059405_74cfa7ea42_o.jpg">
+      <a class="ajax-link" href="collective.html">  
+        <div class="grid-hover">
+          <h1>Events</h1>
+        </div>
+      </a>      
+  </li>  
 
 </div>
 
@@ -153,6 +114,11 @@
   <script src="js/jquery.jkit.1.2.16.min.js"></script>
  
   <script src="js/script.js" type="text/javascript"></script>
+  <script> 
+    $(function(){
+      $("#header").load("header.html"); 
+    });
+  </script> 
 
 </body>
 </html>
