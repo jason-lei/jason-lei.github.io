@@ -466,6 +466,26 @@ CONTENT
 
 }
 
+.content .text-intro h2{
+  font-size:24px;
+  width:40%;
+  text-transform:uppercase;
+  color:#000000;
+  font-weight:900;
+  line-height:70px;
+
+}
+
+.content .text-intro h4{
+  font-size:16px;
+  width:40%;
+  text-transform:uppercase;
+  color:#000000;
+  font-weight:300;
+  line-height:50px;
+
+}
+
 .content .text-intro p{
   font-size:13px;
   color:#8d8d8d;
