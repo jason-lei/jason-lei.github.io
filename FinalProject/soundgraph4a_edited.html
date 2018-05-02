@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+   <title>soundgraph4a</title>
+
+   <script src="../Tone.js"></script>
+   <script src="../NexusUI.js"></script>
+</head>
+<body>
+
+<button onclick="startit()">start them notes</button>
+<br>
+<br>
+<button onclick="stopit()">stop them notes</button>
+<br>
+<br>
+<br>
+<canvas id="thecanvas" width="500" height="500"></canvas>
+
+
+<script>
+	// graphics
+	var canvas = document.getElementById("thecanvas");
+	var ctx = canvas.getContext("2d");
+
+	var width = canvas.getAttribute("width");
+	var height = canvas.getAttribute("height");
+
+	// for random colors
+	var randcolor = new Tone.CtrlRandom(0, 255);
+	// and random positions
+	var randx = new Tone.CtrlRandom(0, width);
+	var randy = new Tone.CtrlRandom(0, height);
+	// for random radii
+	var randrad = new Tone.CtrlRandom(10, 30);
+
+	// the 'class'
+	CircleDrawer = function() {
+		var red, green, blue;
+		var xloc, yloc, rad;
+		var alphaval, countdown;
+
+		this.go = function() {
+			red = parseInt(randcolor.value);
+			blue = parseInt(randcolor.value);
+			green = parseInt(randcolor.value);
+			xloc = randx.value;
+			yloc = randy.value;
+			rad = randrad.value;
+			alphaval = 1.0;
+			countdown = 100;
+		}
+
+		this.draw = function() {
+			if (countdown-- > 0) {
+				ctx.beginPath();
+				ctx.fillStyle = "rgb(255, 255, 255)";
+				ctx.arc(xloc, yloc, rad,  0,2*Math.PI);
+				ctx.fill();
+
+				ctx.beginPath();
+				ctx.fillStyle = "rgba(" + red + "," + green + "," + blue + "," + alphaval + ")";
+				ctx.arc(xloc, yloc, rad,  0,2*Math.PI);
+				ctx.fill();
+				alphaval -= (1/countdown);
+			}
+		}
+	}
+
+	var docircle;
+
+	// create an array of circle-drawers
+	var ncircs = 20;
+	var theCircles = new Array(ncircs);
+	var curcirc;
+
+	function drawcirc() {
+		if (docircle == 1) {
+			docircle = 0; // set this so it will draw initially
+			theCircles[curcirc].go(); // and go!
+			if (++curcirc >= ncircs) curcirc = 0; // wrap around to reuse the draws
+		}
+
+		for (i = 0; i < ncircs; i++) {
+			// check 'em all for drawing
+			theCircles[i].draw();
+		}
+
+		requestAnimationFrame(drawcirc);
+	}
+
+
+	// sound
+	var notesynth = new Tone.MonoSynth().toMaster(); 
+
+	function startit() {
+		Tone.Transport.start(); // start the transport for timing
+
+		docircle = 0;
+		for (i = 0; i < ncircs; i++) {
+			theCircles[i] = new CircleDrawer();
+		}
+		curcirc = 0;
+
+		drawcirc();
+		// play a note 0.2 seconds from now
+		Tone.Transport.schedule(playnote, "+0.2");
+	}
+
+	function stopit() {
+		Tone.Transport.stop();
+	}
+
+	// random midi note
+	var mnote = new Tone.CtrlRandom(20, 40);
+	function playnote() {
+		notesynth.triggerAttackRelease(Tone.Frequency(mnote.value, "midi"), 0.2);
+		// schedule the next note
+		Tone.Transport.schedule(playnote,  "+0.2");
+		docircle = 1;
+	}
+</script>
+</body>
+</html>

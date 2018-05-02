@@ -1,0 +1,275 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>sequencr</title>
+
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/style.css">
+	<!-- <link rel="stylesheet" href="css/style-responsive.css">   -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+	<link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+
+	<!-- <script src="../p5/p5.js"></script> -->
+	<script src="../Tone.js"></script>
+	<script src="../NexusUI.js"></script>
+</head>
+<body>
+
+<div class="content" id="ajax-content">
+
+
+    <div class="text-intro-centered">
+
+      	<h1>sequencr</h1>
+      	<br/><br/><br/>            
+      	<div class="row">
+          	<div class="column">
+          		<h4>Volume</h4>
+				<div id="slider"></div>
+				<div id="number"></div>
+          	</div>
+          	<div class="column">
+          		<h4>Tempo</h4>
+				<div id="tempo"></div>
+				<div id="tempo_number"></div>
+          	</div>
+          	<div class="column">
+          		<h4>L/R Pan</h4>
+				<div id="pan"></div>
+          		<div id="pan_number"></div>
+          	</div>
+          	<div class="column">
+          		<h4>Root (CDEFGAB)</h4>
+				<div id="radio"></div>
+				<h4>Major/Minor</h4>
+				<div id="toggle"></div>
+          	</div>
+      	</div>
+
+		<div id="sequencer"  style="width:700px;height:400px;margin:10px auto 0px"></div>
+		<div id="random_button" style="width:700px;height:400px;margin:10px auto 0px"></div>
+		<div id="start_button" style="margin:10px auto 0px"></div>
+		<div id="oscilloscope" style="width:700px;height:400px;margin:10px auto 0px"></div>
+
+	</div>
+        
+</div>
+
+
+<script>
+	default_ms = 200
+
+	Nexus.context = Tone.context
+
+    var start_button = new Nexus.TextButton('#start_button',{
+    	'size': [150,50],
+    	'state': false,
+    	'text': 'Start',
+    	'alternateText': 'Stop'
+    })
+
+    sequencer_running = false
+
+	    start_button.on('change',function(v) {
+	    	console.log("start button: "+v);
+	    	if (v == true) {
+	    		sequencer.start()
+
+	    	}
+
+	    	else {
+	    		sequencer.stop()
+	    	}
+
+	    	
+		})
+
+	var random_button = new Nexus.TextButton('#random_button',{
+    	'size': [150,50],
+    	'state': false,
+    	'text': 'Randomize'
+    })
+
+    	random_button.on('change',function(v) {
+    		if (v == true){
+	    		console.log("random button: "+v);
+	    		temp = sequencer.matrix.pattern[8]
+	    		console.log(temp)
+	    		for (i = 0; i < 8; i++){
+					sequencer.matrix.populate.row(i, 0.05)
+				}
+				sequencer.matrix.set.row(8, temp)
+	    	}
+	    	
+		})
+
+	var pan = new Nexus.Slider('#pan',{
+	    'size': [120, 20],
+	    'mode': 'absolute', 
+	    'min': -1,
+	    'max': 1,
+	    'value': 0
+	})
+	var pan_number = new Nexus.Number('#pan_number')
+   	pan_number.link(pan)
+
+    // Major scale
+	Nexus.tune.createScale(0,2,4,5,7,9,11,12);
+
+	var tempo = new Nexus.Slider('#tempo',{
+	    'size': [120, 20],
+	    'mode': 'absolute',
+	    'min': 0,
+	    'max': 300,
+	    'step': 20,
+	    'value': default_ms
+	})
+
+	var tempo_number = new Nexus.Number('#tempo_number', {
+   		'value': default_ms,
+   		'min': 0,
+   		'max': 300
+   	})
+   	tempo_number.link(tempo)
+
+	var toggle = new Nexus.Toggle('#toggle',{
+		'size': [40,20],
+		'state': false
+	})
+
+	toggle.on('change',function(v) {
+		console.log("toggle: "+v);
+		// Major
+		if (v == true){
+			Nexus.tune.createScale(0,2,3,5,7,8,10,12);
+		}
+		// Minor
+		else{
+			Nexus.tune.createScale(0,2,4,5,7,9,11,12);
+		}
+	})
+
+
+	var sequencer = new Nexus.Sequencer('#sequencer',{
+     	'mode': 'toggle',
+     	'rows': 9,
+     	'columns': 16
+	})
+
+	sequencer.interval = new Nexus.Interval(10000*6/(default_ms), function(){
+	// 	// console.log('beep');
+	})
+
+	sequencer.matrix.set.row(8, [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0])
+
+	sequencer.on('step',function(v) {
+		console.log("sequencer: "+v);
+		console.log(v.length)
+		var i;
+		var arr = []
+		for (i = 0; i < v.length; i++) { 
+			if (v[i] == 1){
+				if (i == 0){
+					arr.push(Nexus.note(i)/4)
+				}
+				else {
+					arr.push(Nexus.note(i-1)*2)
+				}
+			}
+		}
+
+		console.log("arr: "+arr)
+		synth.triggerAttackRelease(arr, "4n");
+	})
+
+	tempo.on('change',function(v) {
+		console.log("tempo: "+v);
+		sequencer.interval.ms(10000*6/(v))
+		
+	})
+
+
+
+	var slider = new Nexus.Slider('#slider',{
+    'size': [120,20],
+    'mode': 'relative',
+    'min': -100,
+    'max': 100,
+    'step': 0,
+    'value': 0
+	})
+
+	var vol = new Tone.Volume(0);
+
+	slider.on('change',function(v) {
+  		console.log("slider: "+v);
+  		vol.volume = v
+
+})
+
+	var radiobutton = new Nexus.RadioButton('#radio',{
+		'size': [120,25],
+		'numberOfButtons': 7,
+		'active': 0
+	})
+
+	Nexus.tune.root = Nexus.note(0,0);
+
+	radiobutton.on('change',function(v) {
+		console.log("radio: "+v);
+		if (v == 0) {
+			output = 261.63
+		}
+		else if (v == 1){
+			output = 293.66
+		}
+		else if (v == 2){
+			output = 329.63
+		}
+		else if (v == 3){
+			output = 349.23
+		}
+		else if (v == 4){
+			output = 392.00
+		}
+		else if (v == 5){
+			output = 440
+		}
+		else{
+			output = 493.88
+		}
+		console.log(output)
+		Nexus.tune.root = output
+	})
+
+   	var number = new Nexus.Number('#number', {
+   		'value': 0,
+   		'min': -100,
+   		'max': 100,
+   		'step': 1
+   	})
+   	number.link(slider)
+
+
+	var synth = new Tone.PolySynth(8, Tone.Synth)
+	synth.connect(vol, Tone.Master);
+	synth.toMaster();
+
+	var loop = new Tone.Loop(function(time){
+		Tone.Draw.schedule(function(){
+
+
+		}, time)
+	}, "8n")
+
+	var oscilloscope = new Nexus.Spectrogram('#oscilloscope')
+	oscilloscope.connect(synth)
+
+</script>
+
+</script>
+
+</body>
+</html>

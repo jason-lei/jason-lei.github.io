@@ -1,0 +1,314 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pshimmer3a</title>
+
+	<!-- <script src="../p5/p5.js"></script> -->
+	<script src="../Tone.js"></script>
+	<script src="../NexusUI.js"></script>
+</head>
+<body>
+
+<!-- <div id="synth">
+	<div class="row">
+		<div class="col"><div nexus-ui="dial" id="freq"></div></div>
+    	<div class="col"><div nexus-ui="dial" id="volume"></div></div>
+    	<div class="col"><div nexus-ui="dial" id="mod"></div></div> -->
+		<!-- <div class="column">
+			<div nexus-ui="dial" id="freq"></div>
+		</div>
+		<div class="column">
+			<div nexus-ui="dial" id="volume"></div>
+		</div>
+		<div class="column">
+			<div nexus-ui="dial" id="mod"></div>
+		</div>
+	</div> -->
+ <!--  <div nexus-ui="dial" id="freq"></div>
+  <div nexus-ui="dial" id="volume"></div>
+  <div nexus-ui="dial" id="mod"></div> -->
+<!-- </div> -->
+
+<div id="start_button"></div>
+<div class="sovrn-ads">
+	<div id="dial"></div>
+	<div class="ad-left">
+		<!-- <div id="dial"></div> -->
+		hi
+	</div>
+	<div class="ad-right">
+		<!-- <div id="number"></div> -->
+		bye
+	</div>
+	<div class="clear"></div>
+</div>
+<div id="pan"></div>
+<div id="sequencer"></div>
+<!-- <div id="wrapper">
+    <div id="div1">The two divs are<br/><br/><br/><br/><br/><br/></div>
+    <div id="div2">next to each other.</div>
+</div> -->
+
+<script>
+// 	var synth = new Nexus.Rack("#synth")
+
+// synth.freq.value = 0.25
+// synth.volume.value = 0.5
+// synth.mod.value = 0.75
+
+// synth.freq.on('change',function(v) {
+//   console.log(v);
+// })
+
+    var button = new Nexus.TextButton('#start_button',{
+    	'size': [150,50],
+    	'state': false,
+    	'text': 'Start',
+    	'alternateText': 'Stop'
+    	// 'alternate': true
+    })
+
+	    button.on('change',function(v) {
+	    	console.log("start button: "+v);
+	    	if (v == true) {
+	    		// sequencer.interval.ms = 10000
+	    		sequencer.start()
+
+
+	    	}
+
+	    	else {
+	    		sequencer.stop()
+	    	}
+
+	    	
+		})
+
+	var pan = new Nexus.Pan('#pan')
+
+    // Minor harmonic
+	Nexus.tune.createScale(0,2,3,5,7,8,10,12);
+
+	// Minor something
+	// Nexus.tune.createScale(0,2,3,5,7,8,10,12);
+
+	var sequencer = new Nexus.Sequencer('#sequencer',{
+     	'size': [800,400],
+     	'mode': 'toggle',
+     	'rows': 8,
+     	'columns': 16
+     	// 'interval': 5000
+	})
+
+	sequencer.interval = new Nexus.Interval(300, function(){
+		// console.log('beep');
+	})
+
+	// sequencer.matrix.populate.all([0.3, 0.6, 0.2, 0.3])
+
+	// sequencer.counter = new Nexus.Counter(800, function(){
+	// 	// console.log('beep');
+	// })
+	sequencer.counter = new Nexus.Counter()
+	sequencer.counter.next()
+
+	sequencer.on('step',function(v) {
+		console.log("sequencer: "+v);
+		console.log(v.length)
+		var i;
+		var arr = []
+		for (i = 0; i < v.length; i++) { 
+			if (v[i] == 1){
+				arr.push(Nexus.note(i))
+			}
+		}
+
+		console.log("arr: "+arr)
+		synth.triggerAttackRelease(arr, "4n");
+	})
+
+   	var dial = new Nexus.Dial("#dial");
+   	var number = new Nexus.Number('#number', {
+   		'value': 0,
+   		'min': 0,
+   		'max': 100,
+   		'step': 1
+   	})
+   	number.link(dial)
+
+	dial.on('change',function(v) {
+	// v holds the new numeric value of the dial
+	});
+
+	var synth = new Tone.PolySynth(5, Tone.Synth).toMaster();
+
+	// Tone.Transport.schedule(function(time){
+	// 	//use the time argument to schedule a callback with Tone.Draw
+	// 	Tone.Draw.schedule(function(){
+	// 		//do drawing or DOM manipulation here
+
+	// 	}, time)
+	// }, "+0.5")
+</script>
+
+<!-- <script>
+	var sequencer = new Nexus.Sequencer('#target',{
+	 'size': [400,200],
+	 'mode': 'toggle',
+	 'rows': 5,
+	 'columns': 10
+	})
+</script>
+
+<div id="target"></div> -->
+
+<script>
+// graphics
+// 	var numshimmers;
+// 	var totshimmers = 4;
+// 	var noters = [];
+// 	var systems = [];
+
+// 	// no particle system instantiated in setup()
+// 	function setup() {
+// 		createCanvas(700, 500);
+
+// 		numshimmers = 0;
+// 		for (i = 0; i < totshimmers; i++)
+// 			noters[i] = new Notarize();
+
+// 		Tone.Transport.start();
+// 	}
+
+// 	function draw() {
+// 		background(1); // black background
+
+// 		for (i = 0; i < numshimmers; i++) {
+// 			systems[i].addParticle();
+// 			systems[i].run();
+// 		}
+// 	}
+
+// 	function mousePressed() {
+// 			// start up a particle system is the mouse is initializing it
+
+// 		if (++numshimmers > totshimmers) {
+// 			numshimmers = 0;
+// 			for (i = 0; i < totshimmers; i++)
+// 				noters[i].stop();
+// 		} else {
+// 			systems[numshimmers-1] = new ParticleSystem(createVector(mouseX, mouseY));
+// 			var freq = (mouseX/700 * 2000) + 1000
+// 			noters[numshimmers-1].go(freq);
+// 		}
+// 	}
+
+
+// 	// A simple Particle class
+// 	var Particle = function(position) {
+// 		// change accelearation to get particles going all sides
+// 		this.acceleration = createVector(0, 0.0);
+// 		this.velocity = createVector(random(-1, 1), random(-1, 1));
+// 		this.position = position.copy();
+// 		this.lifespan = 255.0;
+// 	};
+
+// 	Particle.prototype.run = function() {
+// 		this.update();
+// 		this.display();
+// 	};
+
+// 	// Method to update position
+// 	Particle.prototype.update = function(){
+// 		this.velocity.add(this.acceleration);
+// 		this.position.add(this.velocity);
+// 		this.lifespan -= 2;
+// 	};
+
+// 	// use Tone.CtrlRandom to randomize the colors
+// 	var randcolor = new Tone.CtrlRandom(0, 255);
+// 	// Method to display
+// 	Particle.prototype.display = function() {
+// 		stroke(randcolor.value, randcolor.value, randcolor.value, this.lifespan); // change color of particle outlines
+// 		strokeWeight(1); // make the outline smaller
+// 		fill(randcolor.value, randcolor.value, randcolor.value, this.lifespan); // change color of particle interiors
+// 		ellipse(this.position.x, this.position.y, 7, 7); // smalle particles
+// 	};
+
+// 	// Is the particle still useful?
+// 	Particle.prototype.isDead = function(){
+// 		if (this.lifespan < 0) {
+// 			return true;
+// 		} else {
+// 			return false;
+// 		}
+// 	};
+
+// 	var ParticleSystem = function(position) {
+// 		this.origin = position.copy();
+// 		this.particles = [];
+// 	};
+
+// 	ParticleSystem.prototype.addParticle = function() {
+// 		this.particles.push(new Particle(this.origin));
+// 	};
+
+// 	ParticleSystem.prototype.run = function() {
+// 		for (var i = this.particles.length-1; i >= 0; i--) {
+// 			var p = this.particles[i];
+// 			p.run();
+// 			if (p.isDead()) {
+// 				this.particles.splice(i, 1);
+// 			}
+// 		}
+// 	};
+
+
+// // audio
+// 	Notarize = function() {
+// 		var mysynth = new Tone.FMSynth( {
+// 			envelope  : {
+// 				attack  : 0.01,
+// 				decay  : 0.01,
+// 				sustain  : 1,
+// 				release  : 0.1
+// 			},
+// 			modulationEnvelope  : {
+// 				attack  : 0.01,
+// 				decay  : 0,
+// 				sustain  : 1,
+// 				release  : 0.1
+// 			}
+// 		});
+
+// 		mydelay1 = new Tone.PingPongDelay(0.2, 0.8);
+// 		mydelay2 = new Tone.PingPongDelay(0.14, 0.8);
+
+// 		mysynth.connect(mydelay1);
+// 		mydelay1.connect(mydelay2);
+// 		mydelay2.toMaster();
+
+// 		var keepgoing = 0;
+// 		var freq;
+// 		this.go = function(f) {
+// 			freq = f;
+// 			keepgoing = 1;
+// 			makenote();
+// 		}
+
+// 		this.stop = function() {
+// 			keepgoing = 0;
+// 		}
+
+// 		var randsched = new Tone.CtrlRandom(0.1, 0.3);
+// 		function makenote() {
+// 			mysynth.triggerAttackRelease(freq, 0.05);
+// 			if (keepgoing == 1)
+// 				Tone.Transport.schedule(makenote, "+" + randsched.value);
+// 		}
+// 	}
+
+</script>
+
+</body>
+</html>
